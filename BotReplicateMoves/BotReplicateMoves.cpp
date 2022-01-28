@@ -82,19 +82,16 @@ void BotReplicateMoves::onTick(std::string eventName)
 			CarWrapper car = gameWrapper->GetLocalCar();
 			if (!car) { return; }
 
+			BallWrapper ball = sw.GetBall();
+			if (!ball) { return; }
+
 			if (!wasRecording)
 			{
-				cvarManager->log("RecordedInputs cleared");
+				cvarManager->log("RecordsList cleared");
 				cvarManager->log("Recording...");
 
-				RecordedInputs.clear();
-				RecordedLocations.clear();
-				RecordedRotations.clear();
-				RecordedVelocities.clear();
+				RecordsList.clear();
 
-				RecordedBallLocations.clear();
-				RecordedBallRotations.clear();
-				RecordedBallVelocities.clear();
 
 				wasRecording = true;
 				recordInitLocation = car.GetLocation();
@@ -105,20 +102,20 @@ void BotReplicateMoves::onTick(std::string eventName)
 				{
 					recordInitBoostAmount = carBoost.GetCurrentBoostAmount();
 				}
-				cvarManager->log("car body : " + std::to_string(car.GetLoadoutBody()));
 			}
 
 
-			ControllerInput inputs = car.GetInput();
-			RecordedInputs.push_back(inputs);
-			RecordedLocations.push_back(car.GetLocation());
-			RecordedRotations.push_back(car.GetRotation());
-			RecordedVelocities.push_back(car.GetVelocity());
-			
-			BallWrapper ball = sw.GetBall();
-			RecordedBallLocations.push_back(ball.GetLocation());
-			RecordedBallRotations.push_back(ball.GetRotation());
-			RecordedBallVelocities.push_back(ball.GetVelocity());
+			Record record;
+			record.Input = car.GetInput();
+			record.Location = car.GetLocation();
+			record.Rotation = car.GetRotation();
+			record.Velocity = car.GetVelocity();
+
+			record.BallLocation = ball.GetLocation();
+			record.BallRotation = ball.GetRotation();
+			record.BallVelocity = ball.GetVelocity();
+
+			RecordsList.push_back(record);
 		}
 		else
 		{ 
@@ -127,27 +124,27 @@ void BotReplicateMoves::onTick(std::string eventName)
 
 
 
-
-
-		if (playRecord && !recording && RecordedInputs.size() > 0)
+		if (playRecord && !recording && RecordsList.size() > 0)
 		{
-			if (botSpawned && botTeleported && inputsIndex < RecordedInputs.size()) //Set recorded inputs to the bot
+			if (botSpawned && botTeleported && inputsIndex < RecordsList.size()) //Set recorded inputs to the bot
 			{
+				Record record = RecordsList.at(inputsIndex);
+
 				CarWrapper botCar = sw.GetPRIs().Get(sw.GetPRIs().Count() - 1).GetCar();
 				if (!botCar.IsNull())
 				{
-					botCar.SetLocation(RecordedLocations.at(inputsIndex));
-					botCar.SetRotation(RecordedRotations.at(inputsIndex));
-					botCar.SetVelocity(RecordedVelocities.at(inputsIndex));
-					botCar.SetInput(RecordedInputs.at(inputsIndex));
+					botCar.SetLocation(record.Location);
+					botCar.SetRotation(record.Rotation);
+					botCar.SetVelocity(record.Velocity);
+					botCar.SetInput(record.Input);
 				}
 
 				BallWrapper ball = sw.GetBall();
 				if (!ball.IsNull())
 				{
-					ball.SetLocation(RecordedBallLocations.at(inputsIndex));
-					ball.SetRotation(RecordedBallRotations.at(inputsIndex));
-					ball.SetVelocity(RecordedBallVelocities.at(inputsIndex));
+					ball.SetLocation(record.BallLocation);
+					ball.SetRotation(record.BallRotation);
+					ball.SetVelocity(record.BallVelocity);
 				}
 
 
@@ -173,7 +170,7 @@ void BotReplicateMoves::onTick(std::string eventName)
 				botTeleported = true;
 				inputsIndex = 0;
 			}
-			else if (inputsIndex == RecordedInputs.size())
+			else if (inputsIndex == RecordsList.size())
 			{
 				playRecord = false;
 			}
@@ -186,51 +183,22 @@ void BotReplicateMoves::onTick(std::string eventName)
 			}
 			tickCount++;
 		}
-
-
-
-		/*
-		int PlayersCount = 0;
-
-		for (int i = 0; i < pris.Count(); i++)
-		{
-			PriWrapper pri = pris.Get(i);
-			if (!pri.IsNull())
-			{
-				if (pri.GetbBot())
-				{
-					CarWrapper carBot = pri.GetCar();
-					if (!carBot.IsNull())
-					{
-						CarWrapper car = gameWrapper->GetLocalCar();
-						if (!car.IsNull())
-						{
-							ControllerInput newInput = car.GetInput();
-
-							carBot.SetInput(newInput);
-
-							BoostWrapper carBoost = car.GetBoostComponent();
-							if (!carBoost.IsNull())
-							{
-								float boostAmount = carBoost.GetCurrentBoostAmount();
-
-								BoostWrapper BoostBot = carBot.GetBoostComponent();
-								if (!BoostBot.IsNull())
-								{
-									BoostBot.SetBoostAmount(boostAmount);
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					PlayersCount++;
-				}
-			}
-		}*/
-
 	}
+}
+
+void BotReplicateMoves::SaveActualRecord(std::vector<Record> recordsList)
+{
+	std::vector<MyStruct> asd{
+		{1, false, "asd"},
+		{2, true, "pog"}
+	};
+	LOG("Serializing: {}", asd);
+	//auto conversion to json
+	json asd_as_json = asd;
+	auto out_path = gameWrapper->GetDataFolder() / "myplugin" / "mydata.json";
+	create_directories(out_path.parent_path());
+	auto out = std::ofstream(out_path);
+	out << asd_as_json.dump();
 }
 
 void BotReplicateMoves::InitGame(std::string eventName)

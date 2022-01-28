@@ -4,10 +4,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 
+
+#include "libs/include/json.hpp"
+using namespace nlohmann;
+
 #include <string>
 #include <vector>
 #include <functional>
 #include <memory>
+#include <fstream>
 
 #include "imgui/imgui.h"
 

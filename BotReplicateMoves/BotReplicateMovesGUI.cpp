@@ -67,7 +67,7 @@ void BotReplicateMoves::RenderSettings()
 		playRecord = false;
 	}
 
-	ImGui::Text("RecordedInputs Count : %d", RecordedInputs.size());
+	ImGui::Text("RecordedInputs Count : %d", RecordsList.size());
 }
 
 
