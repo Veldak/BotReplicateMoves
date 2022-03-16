@@ -188,17 +188,14 @@ void BotReplicateMoves::onTick(std::string eventName)
 
 void BotReplicateMoves::SaveActualRecord(std::vector<Record> recordsList)
 {
-	std::vector<MyStruct> asd{
-		{1, false, "asd"},
-		{2, true, "pog"}
-	};
-	LOG("Serializing: {}", asd);
 	//auto conversion to json
-	json asd_as_json = asd;
+	json recordsList_json = recordsList;
 	auto out_path = gameWrapper->GetDataFolder() / "myplugin" / "mydata.json";
 	create_directories(out_path.parent_path());
 	auto out = std::ofstream(out_path);
-	out << asd_as_json.dump();
+	out << recordsList_json.dump();
+
+
 }
 
 void BotReplicateMoves::InitGame(std::string eventName)

@@ -10,7 +10,7 @@ constexpr auto plugin_version = stringify(VERSION_MAJOR) "." stringify(VERSION_M
 
 struct Record
 {
-	ControllerInput Input;
+	MyControllerInput Input;
 	Vector Location;
 	Rotator Rotation;
 	Vector Velocity;
@@ -20,91 +20,28 @@ struct Record
 	Vector BallVelocity;
 };
 
-struct MyStruct
+struct MyControllerInput
 {
-	int a;
-	bool b;
-	std::string c;
+	float Throttle = .0f;
+	float Steer = .0f;
+	float Pitch = .0f;
+	float Yaw = .0f;
+	float Roll = .0f;
+	float DodgeForward = .0f;
+	float DodgeStrafe = .0f;
+	unsigned long Handbrake;
+	unsigned long Jump;
+	unsigned long ActivateBoost;
+	unsigned long HoldingBoost;
+	unsigned long Jumped;
 };
 
+
 //magic macro that defines serialize\deserialize functions automagically
-//NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ControllerInput, Throttle, Steer, Pitch, Yaw, Roll, DodgeForward, DodgeStrafe, Handbrake, Jump, ActivateBoost, HoldingBoost, Jumped)
-//NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector, X, Y, Z)
-//NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Rotator, Pitch, Yaw, Roll)
-//NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Record, Input, Location, Rotation, Velocity, BallLocation, BallRotation, BallVelocity)
-
-void to_json(json& j, const Record& r)
-{
-	j = json{
-		{ "Input", {
-			{ "Steer", r.Input.Steer },
-			{ "Pitch", r.Input.Pitch },
-			{ "Yaw", r.Input.Yaw },
-			{ "Roll", r.Input.Roll },
-			{ "DodgeForward", r.Input.DodgeForward },
-			{ "Handbrake", r.Input.Handbrake },
-			{ "Jump", r.Input.Jump },
-			{ "ActivateBoost", r.Input.ActivateBoost },
-			{ "HoldingBoost", r.Input.HoldingBoost },
-			{ "Jumped", r.Input.Jumped },
-			{ "DodgeStrafe ", r.Input.DodgeStrafe }
-			}
-		},
-		{ "Location", {
-			{ "X", r.Location.X },
-			{ "Y ", r.Location.Y },
-			{ "Z", r.Location.Z },
-			}
-		},
-		{ "Rotation", {
-			{ "Pitch", r.Rotation.Pitch },
-			{ "Yaw ", r.Rotation.Yaw },
-			{ "Roll", r.Rotation.Roll },
-			}
-		},
-		{ "Velocity", {
-			{ "X", r.Velocity.X },
-			{ "Y ", r.Velocity.Y },
-			{ "Z", r.Velocity.Z },
-			}
-		},
-		{ "BallLocation", {
-			{ "X", r.BallLocation.X },
-			{ "Y ", r.BallLocation.Y },
-			{ "Z", r.BallLocation.Z },
-			}
-		},
-		{ "BallRotation", {
-			{ "Pitch", r.BallRotation.Pitch },
-			{ "Yaw ", r.BallRotation.Yaw },
-			{ "Roll", r.BallRotation.Roll },
-			}
-		},
-		{ "BallVelocity", {
-			{ "X", r.BallVelocity.X },
-			{ "Y ", r.BallVelocity.Y },
-			{ "Z", r.BallVelocity.Z },
-			}
-		}
-	};
-}
-
-void from_json(const json& j, Record& record)
-{
-	j.at("Input").at("Steer").get_to(record.Input.Steer);
-	j.at("Input").at("Pitch").get_to(record.Input.Pitch);
-	j.at("Input").at("Yaw").get_to(record.Input.Yaw);
-	j.at("Input").at("Roll").get_to(record.Input.Roll);
-	j.at("Input").at("DodgeForward").get_to(record.Input.DodgeForward);
-	j.at("Input").at("Handbrake").get_to(record.Input.Handbrake);
-	j.at("Input").at("Jump").get_to(record.Input.Jump);
-	j.at("Input").at("ActivateBoost").get_to(record.Input.ActivateBoost);
-	j.at("Input").at("Steer").get_to(record.Input.Steer);
-	j.at("Input").at("Steer").get_to(record.Input.Steer);
-	j.at("Input").at("Steer").get_to(record.Input.Steer);
-	j.at("last").get_to(name.last);
-}
-
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MyControllerInput, Throttle, Steer, Pitch, Yaw, Roll, DodgeForward, DodgeStrafe, Handbrake, Jump, ActivateBoost, HoldingBoost, Jumped)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector, X, Y, Z)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Rotator, Pitch, Yaw, Roll)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Record, Input, Location, Rotation, Velocity, BallLocation, BallRotation, BallVelocity)
 
 
 class BotReplicateMoves: public BakkesMod::Plugin::BakkesModPlugin, public BakkesMod::Plugin::PluginSettingsWindow/*, public BakkesMod::Plugin::PluginWindow*/

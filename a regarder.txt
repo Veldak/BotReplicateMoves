@@ -1,0 +1,2 @@
+regarder dans primitivecomponentwrapper, 1 ere ligne ya GetRBChannel
+GetVisibilityId
